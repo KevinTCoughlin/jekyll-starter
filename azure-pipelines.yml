@@ -32,7 +32,7 @@ steps:
 # Archive files using compression formats such as .7z, .rar, .tar.gz, and .zip.
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.BinariesDirectory)' 
+    rootFolderOrFile: '_site' 
     includeRootFolder: false 
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' 
