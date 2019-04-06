@@ -1,21 +1,46 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/ruby
-pool:
-  vmImage: 'ubuntu-16.04' # other options: 'macOS-10.13', 'vs2017-win2016'
 
+# Agent pool vm image
+pool:
+  vmImage: 'ubuntu-16.04'
+
+# Trigger build with commit to master branch
 trigger:
 - master
 
 steps:
+# Use Ruby Version
+# Retrieves the specified version of Ruby from the tool cache. Optionally add it to PATH.
 - task: UseRubyVersion@0
   inputs:
     versionSpec: '>= 2.4'
     addToPath: true
+
+# Run script to install dependencies
 - script: |
     gem install bundler
+
+# Run script to install Jekyll site dependencies
 - script: |
     bundle install
+
+# Run script to build site
 - script: |
     jekyll build
+
+# Archive Files
+# Archive files using compression formats such as .7z, .rar, .tar.gz, and .zip.
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)' 
+    includeRootFolder: false 
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' 
+    replaceExistingArchive: true
+
+# Publish Build Artifacts
+# Publish build artifacts to Azure Pipelines/TFS or a file share
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '_site'
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'  
+    artifactName: 'drop'
